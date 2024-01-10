@@ -72,11 +72,13 @@ export function Quiz() {
 	const selectQuestion = () => {
 		let randomIndex;
 
-		let guessed = correctGuesses.concat(badGuesses);
+		//let guessed = correctGuesses.concat(badGuesses);
 
-		do {
+		randomIndex = Math.floor(Math.random() * termsAndDefinitions.length);
+
+		/*do {
 			randomIndex = Math.floor(Math.random() * termsAndDefinitions.length);
-		} while (guessed.includes(randomIndex));
+		} while (guessed.includes(randomIndex));*/
 
 		answerWithTerm(false);
 
