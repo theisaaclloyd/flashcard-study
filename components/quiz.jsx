@@ -18,7 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 import { useState, useEffect } from 'react';
-
+import { set } from "date-fns";
 
 const termsAndDefinitions = [
 	{ term: "0", definition: "0000" }, // 0
@@ -47,15 +47,39 @@ export function Quiz() {
 	const [remainingTime, setRemainingTime] = useState(60);
 	const [flashEffect, setFlashEffect] = useState('');
 
-	const [guessed, setGuessed] = useState([]);
+	const [correctGuesses, setCorrect] = useState([]);
+	const [badGuesses, setIncorrect] = useState([]);
 
-	const selectRandomQuestion = () => {
+	const shuffleArray = (array) => {
+		let currentIndex = array.length, temporaryValue, randomIndex;
+	
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex) {
+	
+			// Pick a remaining element...
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+	
+			// And swap it with the current element.
+			temporaryValue = array[currentIndex];
+			array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+	
+		return array;
+	}
+
+	const selectQuestion = () => {
 		let randomIndex;
+
+		let guessed = correctGuesses.concat(badGuesses);
+
 		do {
 			randomIndex = Math.floor(Math.random() * termsAndDefinitions.length);
 		} while (guessed.includes(randomIndex));
 
 		answerWithTerm(false);
+
 		setCurrentQuestion(termsAndDefinitions[randomIndex]);
 		//setIsTerm(Math.random() > 0.5);
 	};
@@ -67,17 +91,18 @@ export function Quiz() {
 			(!isTerm && inputValue.trim().toLowerCase() === currentQuestion.term.toLowerCase())
 		);
 		if (correct) {
-			setGuessed([...guessed, termsAndDefinitions.indexOf(currentQuestion)]);
+			setCorrect([...correctGuesses, termsAndDefinitions.indexOf(currentQuestion)])
 			setScore({ ...score, correct: score.correct + 1 });
 			setFlashEffect('correct');
 		} else {
-			// setGuessed([...guessed, termsAndDefinitions.indexOf(currentQuestion)]);
+			setIncorrect([...badGuesses, termsAndDefinitions.indexOf(currentQuestion)])
 			setScore({ ...score, incorrect: score.incorrect + 1 });
 			setFlashEffect('incorrect');
 		}
+
 		setTimeout(() => setFlashEffect(''), 500);
 		setInputValue('');
-		selectRandomQuestion();
+		selectQuestion();
 	};
 
 	useEffect(() => {
@@ -87,7 +112,7 @@ export function Quiz() {
 		}
 	}, [remainingTime]);
 
-	useEffect(selectRandomQuestion, []);
+	useEffect(selectQuestion, []);
 
 	return (
 		<main className={`flex flex-col items-center justify-center min-h-screen transition-colors duration-500 ${flashEffect === 'correct' ? 'flash-green' : flashEffect === 'incorrect' ? 'flash-red' : 'bg-background'}`}>
@@ -95,14 +120,29 @@ export function Quiz() {
 				<Card className="justify-between items-center">
 					<CardHeader>
 						<CardTitle className="flex justify-between text-2xl">
-							Quiz Finished!
+							Time is up!
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="grid w-full items-center gap-4">
 							<div className="flex flex-col space-y-1.5">
 								<p className="text-lg font-medium text-gray-500">Correct answers: {score.correct}</p>
+								<ul className="list-disc pl-6 pb-4 text-lg font-medium text-gray-500">
+									{
+										correctGuesses.map((item, index) => {
+											return <li key={index}>{termsAndDefinitions[item].term} = {termsAndDefinitions[item].definition}</li>
+										})
+									}
+								</ul>
+
 								<p className="text-lg font-medium text-gray-500">Incorrect answers: {score.incorrect}</p>
+								<ul className="list-disc pl-6 pb-4 text-lg font-medium text-gray-500">
+									{
+										badGuesses.map((item, index) => {
+											return <li key={index}>{termsAndDefinitions[item].term} = {termsAndDefinitions[item].definition}</li>
+										})
+									}
+								</ul>
 							</div>
 						</div>
 					</CardContent>
