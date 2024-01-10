@@ -118,7 +118,7 @@ export function Quiz() {
 							<form onSubmit={handleSubmit}>
 								<div className="grid w-full items-center gap-4">
 									<div className="flex flex-col space-y-1.5">
-										<Label htmlFor="name">Name</Label>
+										<Label htmlFor="name">Answer</Label>
 										<Input
 											className="flex-1 p-2 border border-gray-300 rounded-md"
 											placeholder={`Type your answer in ${isTerm ? "BINARY" : "HEXIDECIMAL"}`}
