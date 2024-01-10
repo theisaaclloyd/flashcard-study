@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { Quiz } from '@/components/quiz';
+import { NameTag } from '@/components/nametag';
 
 /*export default function Home() {
   return (
@@ -115,5 +116,10 @@ import { Quiz } from '@/components/quiz';
 */
 
 export default function Home() {
-  return <Quiz />;
+  return (
+    <>
+      <NameTag />
+      <Quiz />
+    </>
+  );
 }
