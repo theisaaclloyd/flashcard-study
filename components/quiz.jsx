@@ -47,11 +47,17 @@ export function Quiz() {
 	const [remainingTime, setRemainingTime] = useState(60);
 	const [flashEffect, setFlashEffect] = useState('');
 
+	const [guessed, setGuessed] = useState([]);
+
 	const selectRandomQuestion = () => {
-		const randomIndex = Math.floor(Math.random() * termsAndDefinitions.length);
-		//setIsTerm(Math.random() > 0.5);
-		answerWithTerm(false)
+		let randomIndex;
+		do {
+			randomIndex = Math.floor(Math.random() * termsAndDefinitions.length);
+		} while (guessed.includes(randomIndex));
+
+		answerWithTerm(false);
 		setCurrentQuestion(termsAndDefinitions[randomIndex]);
+		//setIsTerm(Math.random() > 0.5);
 	};
 
 	const handleSubmit = (event) => {
@@ -61,9 +67,11 @@ export function Quiz() {
 			(!isTerm && inputValue.trim().toLowerCase() === currentQuestion.term.toLowerCase())
 		);
 		if (correct) {
+			setGuessed([...guessed, termsAndDefinitions.indexOf(currentQuestion)]);
 			setScore({ ...score, correct: score.correct + 1 });
 			setFlashEffect('correct');
 		} else {
+			// setGuessed([...guessed, termsAndDefinitions.indexOf(currentQuestion)]);
 			setScore({ ...score, incorrect: score.incorrect + 1 });
 			setFlashEffect('incorrect');
 		}
@@ -84,7 +92,7 @@ export function Quiz() {
 	return (
 		<main className={`flex flex-col items-center justify-center min-h-screen transition-colors duration-500 ${flashEffect === 'correct' ? 'flash-green' : flashEffect === 'incorrect' ? 'flash-red' : 'bg-background'}`}>
 			{!remainingTime ? (
-				<Card>
+				<Card className="justify-between items-center">
 					<CardHeader>
 						<CardTitle className="flex justify-between text-2xl">
 							Quiz Finished!
@@ -98,20 +106,23 @@ export function Quiz() {
 							</div>
 						</div>
 					</CardContent>
+					<CardFooter className="flex justify-between">
+							<Button onClick={() => window.location.reload()} className="hover:bg-red-900">Reset</Button>
+						</CardFooter>
 				</Card>
 			) : (
 				<>
 					<Card className={`w-[350px] ${remainingTime < 30 && "bg-red-50"}`}>
 						<CardHeader>
 							<CardTitle className="flex justify-between">
-								Question {score.correct + score.incorrect + 1} - {isTerm ? "HEX to BIN" : "BIN to HEX"}
+								Question {score.correct + score.incorrect + 1}
 								<div className="flex items-center space-x-4">
 									<TimerIcon className={`h-6 w-6 ${remainingTime >= 30 ? "text-gray-500" : "text-red-600"}`} />
 									<p className={`text-lg font-medium ${remainingTime >= 30 ? "text-gray-500" : "text-red-600"}`}>{String(Math.floor(remainingTime / 60)).padStart(2, '0') + ':' + String(remainingTime % 60).padStart(2, '0')}</p>
 								</div>
 							</CardTitle>
-							<CardDescription className="text-slate-800">
-								{isTerm ? currentQuestion.term : currentQuestion.definition}
+							<CardDescription className="text-xl text-slate-800">
+								({isTerm ? currentQuestion.term : currentQuestion.definition})<sub>2</sub> = (?)<sub>16</sub>
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
