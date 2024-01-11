@@ -52,22 +52,22 @@ export function Quiz() {
 
 	const shuffleArray = (array) => {
 		let currentIndex = array.length, temporaryValue, randomIndex;
-	
+
 		// While there remain elements to shuffle...
 		while (0 !== currentIndex) {
-	
+
 			// Pick a remaining element...
 			randomIndex = Math.floor(Math.random() * currentIndex);
 			currentIndex -= 1;
-	
+
 			// And swap it with the current element.
 			temporaryValue = array[currentIndex];
 			array[currentIndex] = array[randomIndex];
 			array[randomIndex] = temporaryValue;
 		}
-	
+
 		return array;
-	}
+	};
 
 	const selectQuestion = () => {
 		let randomIndex;
@@ -88,16 +88,21 @@ export function Quiz() {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
+
+		if (inputValue.trim() === '') {
+			return; // If it is, return early from the function
+		}
+
 		const correct = (
 			(isTerm && inputValue.trim().toLowerCase() === currentQuestion.definition.toLowerCase()) ||
 			(!isTerm && inputValue.trim().toLowerCase() === currentQuestion.term.toLowerCase())
 		);
 		if (correct) {
-			setCorrect([...correctGuesses, termsAndDefinitions.indexOf(currentQuestion)])
+			setCorrect([...correctGuesses, termsAndDefinitions.indexOf(currentQuestion)]);
 			setScore({ ...score, correct: score.correct + 1 });
 			setFlashEffect('correct');
 		} else {
-			setIncorrect([...badGuesses, termsAndDefinitions.indexOf(currentQuestion)])
+			setIncorrect([...badGuesses, termsAndDefinitions.indexOf(currentQuestion)]);
 			setScore({ ...score, incorrect: score.incorrect + 1 });
 			setFlashEffect('incorrect');
 		}
@@ -132,7 +137,7 @@ export function Quiz() {
 								<ul className="list-disc pl-6 pb-4 text-lg font-medium text-gray-500">
 									{
 										correctGuesses.map((item, index) => {
-											return <li key={index}>{termsAndDefinitions[item].term} = {termsAndDefinitions[item].definition}</li>
+											return <li key={index}>{termsAndDefinitions[item].term} = {termsAndDefinitions[item].definition}</li>;
 										})
 									}
 								</ul>
@@ -141,7 +146,7 @@ export function Quiz() {
 								<ul className="list-disc pl-6 pb-4 text-lg font-medium text-gray-500">
 									{
 										badGuesses.map((item, index) => {
-											return <li key={index}>{termsAndDefinitions[item].term} = {termsAndDefinitions[item].definition}</li>
+											return <li key={index}>{termsAndDefinitions[item].term} = {termsAndDefinitions[item].definition}</li>;
 										})
 									}
 								</ul>
@@ -149,8 +154,8 @@ export function Quiz() {
 						</div>
 					</CardContent>
 					<CardFooter className="flex justify-between">
-							<Button onClick={() => window.location.reload()} className="hover:bg-red-900">Reset</Button>
-						</CardFooter>
+						<Button onClick={() => window.location.reload()} className="hover:bg-red-900">Reset</Button>
+					</CardFooter>
 				</Card>
 			) : (
 				<>
